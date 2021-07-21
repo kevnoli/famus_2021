@@ -1,28 +1,38 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app :dark="goDark">
+<!--     <v-app-bar app color="primary" dark>
+      <v-toolbar-title>Festival Unimed do Sudoeste de Música</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click="goDark = !goDark">
+        <v-icon>mdi-brightness-6</v-icon>
+      </v-btn>
+    </v-app-bar>
+ -->
+    <v-main>
+      <Main />
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Main from "./components/Main";
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
+  name: "App",
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  components: {
+    Main,
+  },
+
+  data: () => ({
+    goDark: false,
+  }),
+  watch: {
+    goDark: function (val) {
+      this.$vuetify.theme.dark = val;
+    },
+  },
+};
+</script>
+<style scoped>
 </style>
