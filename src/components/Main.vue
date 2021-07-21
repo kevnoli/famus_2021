@@ -119,14 +119,15 @@
                           :name="'data de nascimento do ' + tipo"
                         >
                           <v-text-field
-                            v-model="form.dt_nasc"
+                            v-model="comp_dt_nasc"
                             :error-messages="errors"
                             :label="'Data de nascimento do ' + tipo + '*'"
-                            persistent-hint
-                            :hint="dica"
                             prepend-icon="mdi-calendar"
+                            persistent-hint
+                            hint="DD/MM/AAAA"
                             v-bind="attrs"
                             v-on="on"
+                            v-mask="'##/##/####'"
                           ></v-text-field>
                         </validation-provider>
                       </template>
