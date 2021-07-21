@@ -19,10 +19,10 @@
         <v-col sm="10" md="6">
           <v-card :loading="carregando">
             <v-card-title class="pb-0"> Inscreva-se </v-card-title>
-            <validation-observer ref="observer" v-slot="{ invalid }">
+            <validation-observer ref="observer">
               <v-form @submit.prevent="enviar">
-                <v-card-text class="pt-0">
-                  <v-container>
+                <v-card-text class="py-0">
+                  <v-container class="pb-0">
                     <v-row justify="center">
                       <v-radio-group
                         v-model="form.categoria"
@@ -254,14 +254,25 @@
                   </v-container>
                 </v-card-text>
                 <v-card-actions>
-                  <v-btn color="primary" type="submit" :disabled="invalid">
-                    <v-icon>mdi-upload</v-icon>
-                    Enviar
-                  </v-btn>
-                  <v-btn color="accent" @click.stop="clear">
+                  <v-spacer></v-spacer>
+                  <v-btn class="mr-2" color="accent" @click.stop="clear">
                     <v-icon>mdi-close</v-icon>
                     Limpar
                   </v-btn>
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="primary"
+                        type="submit"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        <v-icon>mdi-upload</v-icon>
+                        Enviar
+                      </v-btn>
+                    </template>
+                    <span>É necessário preencher todos os campos</span>
+                  </v-tooltip>
                 </v-card-actions>
               </v-form>
             </validation-observer>
@@ -416,7 +427,7 @@ export default {
       this.$refs.menu.save(date);
     },
     async enviar() {
-      if (this.$refs.observer.validate()) {
+      if (await this.$refs.observer.validate()) {
         let res = await this.$dialog.confirm({
           title: "Aviso",
           text: "Tem certeza que deseja confirmar a inscrição?",
