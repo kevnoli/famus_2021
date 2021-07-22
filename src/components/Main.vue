@@ -67,7 +67,7 @@
                     </validation-provider>
 
                     <v-row justify="center">
-                      <v-radio-group label="Música: " row mandatory>
+                      <v-radio-group v-model="form.musica" label="Música: " row mandatory>
                         <v-radio label="Autoral" value="autoral"></v-radio>
                         <v-radio label="Intérprete" value="int"></v-radio>
                       </v-radio-group>
@@ -94,52 +94,30 @@
                       :name="'cpf do ' + tipo"
                     >
                       <v-text-field
-                        v-model="form.cpf"
+                        v-model="cpf"
                         :error-messages="errors"
                         :label="'CPF do ' + tipo + '*'"
                         prepend-icon="mdi-numeric"
+                        type="tel"
                         v-mask="'###.###.###-##'"
                         required
                       >
                       </v-text-field>
                     </validation-provider>
 
-                    <v-menu
-                      ref="menu"
-                      v-model="menu"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
+                    <validation-provider
+                      v-slot="{ errors }"
+                      rules="date_required|not_minor"
+                      :name="'data de nascimento do ' + tipo"
                     >
-                      <template v-slot:activator="{ on, attrs }">
-                        <validation-provider
-                          v-slot="{ errors }"
-                          rules="date_required"
-                          :name="'data de nascimento do ' + tipo"
-                        >
-                          <v-text-field
-                            v-model="comp_dt_nasc"
-                            :error-messages="errors"
-                            :label="'Data de nascimento do ' + tipo + '*'"
-                            prepend-icon="mdi-calendar"
-                            persistent-hint
-                            hint="DD/MM/AAAA"
-                            v-bind="attrs"
-                            v-on="on"
-                            v-mask="'##/##/####'"
-                          ></v-text-field>
-                        </validation-provider>
-                      </template>
-                      <v-date-picker
+                      <v-text-field
                         v-model="form.dt_nasc"
-                        :active-picker.sync="activePicker"
-                        max="2003-12-31"
-                        min="1900-01-01"
-                        @change="save"
-                        no-title
-                      ></v-date-picker>
-                    </v-menu>
+                        :error-messages="errors"
+                        :label="'Data de nascimento do ' + tipo + '*'"
+                        prepend-icon="mdi-calendar"
+                        type="date"
+                      ></v-text-field>
+                    </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
@@ -153,7 +131,7 @@
                         prepend-icon="mdi-card-account-details"
                         accept="image/*,.pdf"
                         persistent-hint
-                        :hint="dica"
+                        :hint="dica + ' (imagem ou pdf)'"
                         required
                       ></v-file-input>
                     </validation-provider>
@@ -170,7 +148,7 @@
                         prepend-icon="mdi-card-text"
                         accept="image/*,.pdf"
                         persistent-hint
-                        :hint="dica"
+                        :hint="dica + ' (imagem ou pdf)'"
                         required
                       ></v-file-input>
                     </validation-provider>
@@ -186,7 +164,7 @@
                         prepend-icon="mdi-home"
                         accept="image/*,.pdf"
                         persistent-hint
-                        :hint="dica"
+                        :hint="dica + ' (imagem ou pdf)'"
                         required
                       ></v-file-input>
                     </validation-provider>
@@ -203,7 +181,9 @@
                         prepend-icon="mdi-playlist-music"
                         accept="text/plain,.odt,.rtf,.doc,.docx,.pdf"
                         persistent-hint
-                        :hint="dica"
+                        :hint="
+                          dica + ' (.txt, .odt, .rtf, .doc, .docx ou .pdf)'
+                        "
                         required
                       ></v-file-input>
                     </validation-provider>
@@ -256,24 +236,14 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn class="mr-2" color="accent" @click.stop="clear">
+                  <v-btn color="accent" @click.stop="clear">
                     <v-icon>mdi-close</v-icon>
                     Limpar
                   </v-btn>
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        color="primary"
-                        type="submit"
-                        v-bind="attrs"
-                        v-on="on"
-                      >
-                        <v-icon>mdi-upload</v-icon>
-                        Enviar
-                      </v-btn>
-                    </template>
-                    <span>É necessário preencher todos os campos</span>
-                  </v-tooltip>
+                  <v-btn color="primary" type="submit">
+                    <v-icon>mdi-upload</v-icon>
+                    Enviar
+                  </v-btn>
                 </v-card-actions>
               </v-form>
             </validation-observer>
@@ -284,97 +254,15 @@
   </div>
 </template>
 <script>
-import { required, email, mimes, alpha_spaces } from "vee-validate/dist/rules";
-import {
-  extend,
-  ValidationObserver,
-  ValidationProvider,
-  setInteractionMode,
-} from "vee-validate";
-
-setInteractionMode("eager");
-
-extend("required", {
-  ...required,
-  message: "Por favor, preencha o {_field_}",
-});
-
-extend("date_required", {
-  ...required,
-  message: "Por favor, preencha a {_field_}",
-});
-
-extend("check_required", {
-  ...required,
-  message: "Você precisa aceitar os termos",
-});
-
-extend("file_required", {
-  ...required,
-  message: "Por favor, selecione um arquivo",
-});
-
-extend("email", {
-  ...email,
-  message: "Insira um endereço de e-mail válido",
-});
-
-extend("mimes", {
-  ...mimes,
-  message: "Insira um arquivo com o formato correto",
-});
-
-extend("alpha_spaces", {
-  ...alpha_spaces,
-  message: "Somente são permitidos letras e espaços",
-});
-
-extend("cpf", {
-  validate: (value) => {
-    let valid = true;
-    let cpf = value.replaceAll(".", "").replace("-", "").split("");
-    if (
-      cpf.every((n, _, a) => {
-        return a[0] == n;
-      })
-    ) {
-      return false;
-    }
-    let v = 0;
-    for (let i = 10, j = 0; i >= 2; i--) {
-      v += cpf[j] * i;
-      j++;
-    }
-    if ((v * 10) % 11 != cpf[9]) {
-      return false;
-    }
-
-    v = 0;
-    for (let i = 11, j = 0; i >= 2; i--) {
-      v += cpf[j] * i;
-      j++;
-    }
-    if ((v * 10) % 11 != cpf[10]) {
-      return false;
-    }
-
-    return valid;
-  },
-  message: "CPF inválido",
-});
-
 export default {
-  components: {
-    ValidationObserver,
-    ValidationProvider,
-  },
   data: () => ({
     dica: "Clique para selecionar",
     carregando: false,
     activePicker: null,
     menu: false,
+    cpf: "",
     form: {
-      categoria: "solo",
+      categoria: "",
       nome: "",
       nome_art: "",
       musica: "",
@@ -390,9 +278,6 @@ export default {
     },
   }),
   computed: {
-    comp_dt_nasc: function () {
-      return this.formatDate(this.form.dt_nasc);
-    },
     tipo: function () {
       if (this.form.categoria == "solo") {
         return "candidato";
@@ -412,29 +297,22 @@ export default {
       return null;
     },
   },
-  watch: {
-    menu(val) {
-      val && setTimeout(() => (this.activePicker = "YEAR"));
-    },
-  },
   methods: {
-    formatDate(date) {
-      if (!date) return null;
-
-      const [year, month, day] = date.split("-");
-      return `${day}/${month}/${year}`;
-    },
-    save(date) {
-      this.$refs.menu.save(date);
-    },
     async enviar() {
+      console.log(this.form)
       if (await this.$refs.observer.validate()) {
         let res = await this.$dialog.confirm({
           title: "Aviso",
-          text: "Tem certeza que deseja confirmar a inscrição?",
+          text: "Tem certeza que deseja confirmar a inscrição? Não será possível alterá-la depois",
           actions: {
-            false: "Cancelar",
-            true: "Confirmar",
+            false: {
+              text: "Cancelar",
+              color: "warning",
+            },
+            true: {
+              text: "Confirmar",
+              color: "primary",
+            },
           },
         });
         if (res) {
@@ -457,14 +335,24 @@ export default {
               this.carregando = false;
             });
         }
+      } else {
+        this.$nextTick(() => {
+          const el = this.$el.querySelector(
+            ".v-messages.error--text:first-of-type"
+          ).parentNode.parentNode.parentNode;
+          this.$vuetify.goTo(el);
+          return;
+        });
       }
     },
     clear() {
       this.form.categoria = "solo";
+      this.form.musica = "autoral";
       this.form.nome = "";
       this.form.nome_art = "";
       this.form.musica = "";
       this.form.email = "";
+      this.cpf = "";
       this.form.cpf = "";
       this.form.dt_nasc = "";
       this.form.doc_id_frente = null;
@@ -475,6 +363,11 @@ export default {
       this.form.check = false;
 
       this.$refs.observer.reset();
+    },
+  },
+  watch: {
+    cpf: function () {
+      this.form.cpf = this.cpf.replaceAll(".", "").replace("-", "");
     },
   },
 };
