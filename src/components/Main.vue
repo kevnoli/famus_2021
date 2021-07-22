@@ -67,7 +67,12 @@
                     </validation-provider>
 
                     <v-row justify="center">
-                      <v-radio-group v-model="form.musica" label="Música: " row mandatory>
+                      <v-radio-group
+                        v-model="form.musica"
+                        label="Música: "
+                        row
+                        mandatory
+                      >
                         <v-radio label="Autoral" value="autoral"></v-radio>
                         <v-radio label="Intérprete" value="int"></v-radio>
                       </v-radio-group>
@@ -124,16 +129,21 @@
                       rules="file_required|mimes:image/*,.pdf"
                       name="Documento com foto (frente)"
                     >
-                      <v-file-input
-                        v-model="form.doc_id_frente"
-                        :error-messages="errors"
-                        label="Documento com foto (frente)*"
-                        prepend-icon="mdi-card-account-details"
-                        accept="image/*,.pdf"
-                        persistent-hint
-                        :hint="dica + ' (imagem ou pdf)'"
-                        required
-                      ></v-file-input>
+                      <v-sheet
+                        @drop.prevent="dropFile($event, 'doc_id_frente')"
+                        @dragover.prevent
+                      >
+                        <v-file-input
+                          v-model="form.doc_id_frente"
+                          :error-messages="errors"
+                          label="Documento com foto (frente)*"
+                          prepend-icon="mdi-card-account-details"
+                          accept="image/*,.pdf"
+                          persistent-hint
+                          :hint="dica + ' (imagem ou pdf)'"
+                          required
+                        ></v-file-input>
+                      </v-sheet>
                     </validation-provider>
 
                     <validation-provider
@@ -141,32 +151,42 @@
                       rules="file_required|mimes:image/*,.pdf"
                       name="Documento com foto (verso)"
                     >
-                      <v-file-input
-                        v-model="form.doc_id_verso"
-                        :error-messages="errors"
-                        label="Documento com foto (verso)*"
-                        prepend-icon="mdi-card-text"
-                        accept="image/*,.pdf"
-                        persistent-hint
-                        :hint="dica + ' (imagem ou pdf)'"
-                        required
-                      ></v-file-input>
+                      <v-sheet
+                        @drop.prevent="dropFile($event, 'doc_id_verso')"
+                        @dragover.prevent
+                      >
+                        <v-file-input
+                          v-model="form.doc_id_verso"
+                          :error-messages="errors"
+                          label="Documento com foto (verso)*"
+                          prepend-icon="mdi-card-text"
+                          accept="image/*,.pdf"
+                          persistent-hint
+                          :hint="dica + ' (imagem ou pdf)'"
+                          required
+                        ></v-file-input>
+                      </v-sheet>
                     </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
                       rules="file_required|mimes:image/*,.pdf"
                     >
-                      <v-file-input
-                        v-model="form.comp_res"
-                        :error-messages="errors"
-                        label="Comprovante de residência (últimos 3 meses)*"
-                        prepend-icon="mdi-home"
-                        accept="image/*,.pdf"
-                        persistent-hint
-                        :hint="dica + ' (imagem ou pdf)'"
-                        required
-                      ></v-file-input>
+                      <v-sheet
+                        @drop.prevent="dropFile($event, 'comp_res')"
+                        @dragover.prevent
+                      >
+                        <v-file-input
+                          v-model="form.comp_res"
+                          :error-messages="errors"
+                          label="Comprovante de residência (últimos 3 meses)*"
+                          prepend-icon="mdi-home"
+                          accept="image/*,.pdf"
+                          persistent-hint
+                          :hint="dica + ' (imagem ou pdf)'"
+                          required
+                        ></v-file-input>
+                      </v-sheet>
                     </validation-provider>
 
                     <validation-provider
@@ -174,36 +194,47 @@
                       rules="file_required|mimes:text/plain,.odt,.rtf,.txt,.doc,.docx,.pdf"
                       name="Letra da música"
                     >
-                      <v-file-input
-                        v-model="form.letra"
-                        :error-messages="errors"
-                        label="Letra da música*"
-                        prepend-icon="mdi-playlist-music"
-                        accept="text/plain,.odt,.rtf,.doc,.docx,.pdf"
-                        persistent-hint
-                        :hint="
-                          dica + ' (.txt, .odt, .rtf, .doc, .docx ou .pdf)'
-                        "
-                        required
-                      ></v-file-input>
+                      <v-sheet
+                        @drop.prevent="dropFile($event, 'letra')"
+                        @dragover.prevent
+                      >
+                        <v-file-input
+                          v-model="form.letra"
+                          :error-messages="errors"
+                          label="Letra da música*"
+                          prepend-icon="mdi-playlist-music"
+                          accept="text/plain,.odt,.rtf,.doc,.docx,.pdf"
+                          persistent-hint
+                          :hint="
+                            dica + ' (.txt, .odt, .rtf, .doc, .docx ou .pdf)'
+                          "
+                          required
+                        ></v-file-input>
+                      </v-sheet>
                     </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
                       rules="file_required|mimes:video/*"
                       name="Vídeo"
+                      ref="video"
                     >
-                      <v-file-input
-                        v-model="form.video"
-                        :error-messages="errors"
-                        label="Vídeo*"
-                        prepend-icon="mdi-file-video"
-                        accept="video/*"
-                        persistent-hint
-                        :hint="dica"
-                        required
+                      <div
+                        @drop.prevent="dropFile($event, 'video')"
+                        @dragover.prevent
                       >
-                      </v-file-input>
+                        <v-file-input
+                          v-model="form.video"
+                          :error-messages="errors"
+                          label="Vídeo*"
+                          prepend-icon="mdi-file-video"
+                          accept="video/*"
+                          persistent-hint
+                          :hint="dica"
+                          required
+                        >
+                        </v-file-input>
+                      </div>
                     </validation-provider>
 
                     <validation-provider
@@ -256,10 +287,8 @@
 <script>
 export default {
   data: () => ({
-    dica: "Clique para selecionar",
+    dica: "Clique para selecionar ou arraste um arquivo",
     carregando: false,
-    activePicker: null,
-    menu: false,
     cpf: "",
     form: {
       categoria: "",
@@ -298,8 +327,10 @@ export default {
     },
   },
   methods: {
+    dropFile(e, key) {
+      this.form[key] = e.dataTransfer.files[0];
+    },
     async enviar() {
-      console.log(this.form)
       if (await this.$refs.observer.validate()) {
         let res = await this.$dialog.confirm({
           title: "Aviso",
