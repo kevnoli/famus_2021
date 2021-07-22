@@ -45,7 +45,6 @@
                         :error-messages="errors"
                         :label="'Nome do ' + tipo + '*'"
                         prepend-icon="mdi-account"
-                        ref="nome"
                         required
                       >
                       </v-text-field>
@@ -128,6 +127,7 @@
                       v-slot="{ errors }"
                       rules="file_required|mimes:image/*,.pdf"
                       name="Documento com foto (frente)"
+                      ref="doc_id_frente"
                     >
                       <v-sheet
                         @drop.prevent="dropFile($event, 'doc_id_frente')"
@@ -150,6 +150,7 @@
                       v-slot="{ errors }"
                       rules="file_required|mimes:image/*,.pdf"
                       name="Documento com foto (verso)"
+                      ref="doc_id_verso"
                     >
                       <v-sheet
                         @drop.prevent="dropFile($event, 'doc_id_verso')"
@@ -171,6 +172,7 @@
                     <validation-provider
                       v-slot="{ errors }"
                       rules="file_required|mimes:image/*,.pdf"
+                      ref="comp_res"
                     >
                       <v-sheet
                         @drop.prevent="dropFile($event, 'comp_res')"
@@ -193,6 +195,7 @@
                       v-slot="{ errors }"
                       rules="file_required|mimes:text/plain,.odt,.rtf,.txt,.doc,.docx,.pdf"
                       name="Letra da música"
+                      ref="letra"
                     >
                       <v-sheet
                         @drop.prevent="dropFile($event, 'letra')"
@@ -213,16 +216,17 @@
                       </v-sheet>
                     </validation-provider>
 
-                    <validation-provider
-                      v-slot="{ errors }"
-                      rules="file_required|mimes:video/*"
-                      name="Vídeo"
-                      ref="video"
-                    >
-                      <div
-                        @drop.prevent="dropFile($event, 'video')"
-                        @dragover.prevent
+                      <validation-provider
+                        v-slot="{ errors }"
+                        rules="file_required|mimes:video/*"
+                        name="Vídeo"
+                        ref="video"
                       >
+                      
+                    <v-sheet
+                      @drop.prevent="dropFile($event, 'video')"
+                      @dragover.prevent="dragover = true"
+                    >
                         <v-file-input
                           v-model="form.video"
                           :error-messages="errors"
@@ -234,8 +238,8 @@
                           required
                         >
                         </v-file-input>
-                      </div>
-                    </validation-provider>
+                    </v-sheet>
+                      </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
@@ -290,6 +294,7 @@ export default {
     dica: "Clique para selecionar ou arraste um arquivo",
     carregando: false,
     cpf: "",
+    dragover: false,
     form: {
       categoria: "",
       nome: "",
@@ -327,19 +332,22 @@ export default {
     },
   },
   methods: {
-    dropFile(e, key) {
-      this.form[key] = e.dataTransfer.files[0];
+    async dropFile(e, key) {
+      this.form[key] = null;
+      const result = await this.$refs[key].validate(e.dataTransfer.files[0]);
+      if (result.valid) {
+        this.form[key] = e.dataTransfer.files[0];
+      }
+      this.dragover = false;
     },
     async enviar() {
+      console.log(this.form);
       if (await this.$refs.observer.validate()) {
         let res = await this.$dialog.confirm({
           title: "Aviso",
           text: "Tem certeza que deseja confirmar a inscrição? Não será possível alterá-la depois",
           actions: {
-            false: {
-              text: "Cancelar",
-              color: "warning",
-            },
+            false: "Cancelar",
             true: {
               text: "Confirmar",
               color: "primary",
