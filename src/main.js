@@ -58,13 +58,12 @@ extend("not_minor", {
   validate: (value) => {
     let dt = new Date(value).getTime()
     let dt18 = new Date().setFullYear(new Date().getFullYear() - 18)
-    
+
     if (dt <= dt18) {
       return true
     } else {
       return false
     }
-    
   },
   message: "Você precisa ser maior de idade para participar"
 })
@@ -109,7 +108,9 @@ import { VueReCaptcha } from 'vue-recaptcha-v3'
 
 Vue.use(VueReCaptcha, {
   siteKey: '6LfkrcAbAAAAAPdcas9JqZ994P-WwPduv0pYz5BZ',
-  autoHideBadge: true
+  loaderOptions: {
+    autoHideBadge: true,
+  }
 })
 
 Vue.config.productionTip = false

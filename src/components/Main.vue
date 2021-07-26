@@ -269,16 +269,16 @@
 
                     <p class="text-caption">
                       Este site é protegido por reCAPTCHA e a
-                      <a href="https://policies.google.com/privacy"
+                      <a target="_blank" href="https://policies.google.com/privacy"
                         >Política de privacidade</a
                       >
                       e os
-                      <a href="https://policies.google.com/terms"
+                      <a target="_blank" href="https://policies.google.com/terms"
                         >Termos de serviço do Google</a
                       >
                       se aplicam.
                     </p>
-                    
+
                   </v-container>
                 </v-card-text>
                 <v-card-actions>
@@ -369,7 +369,7 @@ export default {
         });
         if (priv) {
           await this.$recaptchaLoaded();
-          this.$recaptcha("login").then(async () => {
+          this.$recaptcha("submit").then(async () => {
             let res = await this.$dialog.confirm({
               title: "Aviso",
               text: "Tem certeza que deseja confirmar a inscrição? Não será possível alterá-la depois",
