@@ -216,17 +216,16 @@
                       </v-sheet>
                     </validation-provider>
 
-                      <validation-provider
-                        v-slot="{ errors }"
-                        rules="file_required|mimes:video/*"
-                        name="Vídeo"
-                        ref="video"
-                      >
-                      
-                    <v-sheet
-                      @drop.prevent="dropFile($event, 'video')"
-                      @dragover.prevent="dragover = true"
+                    <validation-provider
+                      v-slot="{ errors }"
+                      rules="file_required|mimes:video/*"
+                      name="Vídeo"
+                      ref="video"
                     >
+                      <v-sheet
+                        @drop.prevent="dropFile($event, 'video')"
+                        @dragover.prevent="dragover = true"
+                      >
                         <v-file-input
                           v-model="form.video"
                           :error-messages="errors"
@@ -238,15 +237,15 @@
                           required
                         >
                         </v-file-input>
-                    </v-sheet>
-                      </validation-provider>
+                      </v-sheet>
+                    </validation-provider>
 
                     <validation-provider
                       v-slot="{ errors }"
                       :rules="{ check_required: { allowFalse: false } }"
                     >
                       <v-checkbox
-                        v-model="form.check"
+                        v-model="form.edital"
                         :error-messages="errors"
                         required
                       >
@@ -258,8 +257,8 @@
                               href="https://unimedsudoeste.com.br/"
                               @click.stop
                             >
-                              edital.
-                            </a>
+                              edital.</a
+                            >
                             <v-icon small color="primary"
                               >mdi-open-in-new</v-icon
                             >
@@ -267,6 +266,19 @@
                         </template>
                       </v-checkbox>
                     </validation-provider>
+
+                    <p class="text-caption">
+                      Este site é protegido por reCAPTCHA e a
+                      <a href="https://policies.google.com/privacy"
+                        >Política de privacidade</a
+                      >
+                      e os
+                      <a href="https://policies.google.com/terms"
+                        >Termos de serviço do Google</a
+                      >
+                      se aplicam.
+                    </p>
+                    
                   </v-container>
                 </v-card-text>
                 <v-card-actions>
@@ -308,7 +320,8 @@ export default {
       comp_res: null,
       letra: null,
       video: null,
-      check: false,
+      edital: false,
+      privacidade: false,
     },
   }),
   computed: {
@@ -343,45 +356,61 @@ export default {
     async enviar() {
       console.log(this.form);
       if (await this.$refs.observer.validate()) {
-        let res = await this.$dialog.confirm({
-          title: "Aviso",
-          text: "Tem certeza que deseja confirmar a inscrição? Não será possível alterá-la depois",
+        let priv = await this.$dialog.confirm({
+          title: "Política de privacidade",
+          text: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultricies congue elit ac venenatis. Nunc pellentesque risus augue, ut pharetra mauris viverra nec. Morbi nisi massa, elementum sit amet ipsum ut, consequat tincidunt nulla. Nulla feugiat orci vel nisi sagittis semper. Pellentesque justo purus, rhoncus nec felis non, mollis volutpat diam. Duis dapibus ultrices felis lacinia condimentum. Vivamus eu enim tortor. Aliquam id pulvinar mauris. Nunc eleifend libero turpis, a elementum nibh tempus non.</p><p>Nullam et erat sit amet dolor elementum tincidunt id non turpis. Ut imperdiet porttitor lectus in rhoncus. Sed ut lectus quis erat vulputate elementum vel vel nunc. In sit amet hendrerit nisi. Donec justo felis, luctus vitae purus sit amet, pulvinar eleifend lacus. Donec semper lacus dui, in maximus neque sollicitudin nec. Sed nec elit nulla. Morbi sed lorem tincidunt, gravida magna lacinia, ultricies elit. Praesent at efficitur orci, eu bibendum sapien. Vestibulum porta ante at malesuada tempor.</p><p>Mauris ut volutpat tortor. Suspendisse a lacinia turpis. Nunc at sem lacus. Etiam quis egestas diam. Quisque sollicitudin posuere cursus. Morbi urna lorem, vehicula vitae suscipit quis, vehicula quis leo. Praesent non erat orci. Vivamus dignissim turpis augue, eu venenatis metus hendrerit id. Integer ut metus nulla. Nulla sed vestibulum leo.</p><p>In lobortis interdum ante eu rutrum. Praesent enim purus, consectetur et laoreet in, fermentum nec eros. Vestibulum orci risus, aliquam quis bibendum ac, molestie scelerisque odio. Nunc lorem lacus, vestibulum in pulvinar blandit, tristique ac justo. Aliquam fringilla leo sit amet ante ultrices dignissim. Maecenas accumsan ante eget nibh rhoncus malesuada a ac risus. Suspendisse consectetur aliquet leo, a lobortis lectus ornare ut. Donec id consectetur lacus. In egestas at enim et pellentesque. Nunc aliquet elementum lacus tempor pharetra. Phasellus interdum pellentesque ex nec porta. Vestibulum sed ante blandit libero consequat pretium blandit ut mi. Ut a scelerisque nisi. Sed in neque vulputate, blandit augue at, lobortis lacus. Donec sed elit quis leo convallis imperdiet. Vivamus bibendum, metus in aliquet rutrum, elit neque accumsan eros, et pretium lacus eros vitae erat.</p><p>Nam dapibus, sapien nec mollis fermentum, velit mi rhoncus est, sed ornare nisi libero ut tellus. Curabitur a lacus nec felis sagittis porttitor. Vestibulum et velit nisl. Aenean interdum felis a sem euismod, eget iaculis eros fermentum. Integer condimentum diam in tempor bibendum. Nunc non aliquam urna. Suspendisse consequat sapien vel metus suscipit, in vestibulum velit fringilla. Morbi consectetur interdum nisi, in rutrum leo iaculis ut.</p>",
           actions: {
-            false: "Cancelar",
+            false: "Não aceito",
             true: {
-              text: "Confirmar",
+              text: "Aceito",
               color: "primary",
             },
           },
         });
-        if (res) {
-          this.carregando = true;
-          this.axios
-            .post("https://reqres.in/api/upload", this.form)
-            .then(() => {
-              this.$dialog.notify.success("Inscrição enviada com sucesso!");
-            })
-            .then(() => {
-              this.clear();
-            })
-            .catch((e) => {
-              console.log(e.response);
-              this.$dialog.notify.error(
-                "Não foi possível concluir a inscrição"
-              );
-            })
-            .finally(() => {
-              this.carregando = false;
+        if (priv) {
+          await this.$recaptchaLoaded();
+          this.$recaptcha("login").then(async () => {
+            let res = await this.$dialog.confirm({
+              title: "Aviso",
+              text: "Tem certeza que deseja confirmar a inscrição? Não será possível alterá-la depois",
+              actions: {
+                false: "Cancelar",
+                true: {
+                  text: "Confirmar",
+                  color: "primary",
+                },
+              },
             });
+            if (res) {
+              this.carregando = true;
+              this.axios
+                .post("https://reqres.in/api/upload", this.form)
+                .then(() => {
+                  this.$dialog.notify.success("Inscrição enviada com sucesso!");
+                })
+                .then(() => {
+                  this.clear();
+                })
+                .catch((e) => {
+                  console.log(e.response);
+                  this.$dialog.notify.error(
+                    "Não foi possível concluir a inscrição"
+                  );
+                })
+                .finally(() => {
+                  this.carregando = false;
+                });
+            }
+          });
+        } else {
+          this.$nextTick(() => {
+            const el = this.$el.querySelector(
+              ".v-messages.error--text:first-of-type"
+            ).parentNode.parentNode.parentNode;
+            this.$vuetify.goTo(el);
+            return;
+          });
         }
-      } else {
-        this.$nextTick(() => {
-          const el = this.$el.querySelector(
-            ".v-messages.error--text:first-of-type"
-          ).parentNode.parentNode.parentNode;
-          this.$vuetify.goTo(el);
-          return;
-        });
       }
     },
     clear() {

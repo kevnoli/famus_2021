@@ -59,7 +59,6 @@ extend("not_minor", {
     let dt = new Date(value).getTime()
     let dt18 = new Date().setFullYear(new Date().getFullYear() - 18)
     
-    console.log('dt = ', dt, '; dt18 = ', dt18)
     if (dt <= dt18) {
       return true
     } else {
@@ -105,6 +104,13 @@ extend("cpf", {
 });
 Vue.component('validation-observer', ValidationObserver)
 Vue.component('validation-provider', ValidationProvider)
+
+import { VueReCaptcha } from 'vue-recaptcha-v3'
+
+Vue.use(VueReCaptcha, {
+  siteKey: '6LfkrcAbAAAAAPdcas9JqZ994P-WwPduv0pYz5BZ',
+  autoHideBadge: true
+})
 
 Vue.config.productionTip = false
 
