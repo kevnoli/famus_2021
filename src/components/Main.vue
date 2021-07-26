@@ -30,7 +30,11 @@
                         mandatory
                         label="Categoria:"
                       >
-                        <v-radio label="Solo" value="solo"></v-radio>
+                        <v-radio
+                          label="Solo"
+                          value="solo"
+                          tabindex="1"
+                        ></v-radio>
                         <v-radio label="Dupla/banda" value="banda"></v-radio>
                       </v-radio-group>
                     </v-row>
@@ -46,6 +50,7 @@
                         :label="'Nome do ' + tipo + '*'"
                         prepend-icon="mdi-account"
                         required
+                        tabindex="2"
                       >
                       </v-text-field>
                     </validation-provider>
@@ -61,6 +66,7 @@
                         :label="'Nome artístico d' + grupo + '*'"
                         prepend-icon="mdi-microphone-variant"
                         required
+                        tabindex="3"
                       >
                       </v-text-field>
                     </validation-provider>
@@ -72,7 +78,11 @@
                         row
                         mandatory
                       >
-                        <v-radio label="Autoral" value="autoral"></v-radio>
+                        <v-radio
+                          label="Autoral"
+                          value="autoral"
+                          tabindex="4"
+                        ></v-radio>
                         <v-radio label="Intérprete" value="int"></v-radio>
                       </v-radio-group>
                     </v-row>
@@ -88,6 +98,7 @@
                         :label="'E-mail do ' + tipo + '*'"
                         prepend-icon="mdi-at"
                         required
+                        tabindex="5"
                       >
                       </v-text-field>
                     </validation-provider>
@@ -105,6 +116,7 @@
                         type="tel"
                         v-mask="'###.###.###-##'"
                         required
+                        tabindex="6"
                       >
                       </v-text-field>
                     </validation-provider>
@@ -120,6 +132,7 @@
                         :label="'Data de nascimento do ' + tipo + '*'"
                         prepend-icon="mdi-calendar"
                         type="date"
+                        tabindex="7"
                       ></v-text-field>
                     </validation-provider>
 
@@ -142,6 +155,7 @@
                           persistent-hint
                           :hint="dica + ' (imagem ou pdf)'"
                           required
+                          tabindex="8"
                         ></v-file-input>
                       </v-sheet>
                     </validation-provider>
@@ -165,6 +179,7 @@
                           persistent-hint
                           :hint="dica + ' (imagem ou pdf)'"
                           required
+                          tabindex="9"
                         ></v-file-input>
                       </v-sheet>
                     </validation-provider>
@@ -187,6 +202,7 @@
                           persistent-hint
                           :hint="dica + ' (imagem ou pdf)'"
                           required
+                          tabindex="10"
                         ></v-file-input>
                       </v-sheet>
                     </validation-provider>
@@ -212,6 +228,7 @@
                             dica + ' (.txt, .odt, .rtf, .doc, .docx ou .pdf)'
                           "
                           required
+                          tabindex="11"
                         ></v-file-input>
                       </v-sheet>
                     </validation-provider>
@@ -235,6 +252,7 @@
                           persistent-hint
                           :hint="dica"
                           required
+                          tabindex="12"
                         >
                         </v-file-input>
                       </v-sheet>
@@ -248,6 +266,7 @@
                         v-model="form.edital"
                         :error-messages="errors"
                         required
+                        tabindex="13"
                       >
                         <template v-slot:label>
                           <div>
@@ -269,25 +288,28 @@
 
                     <p class="text-caption">
                       Este site é protegido por reCAPTCHA e a
-                      <a target="_blank" href="https://policies.google.com/privacy"
+                      <a
+                        target="_blank"
+                        href="https://policies.google.com/privacy"
                         >Política de privacidade</a
                       >
                       e os
-                      <a target="_blank" href="https://policies.google.com/terms"
+                      <a
+                        target="_blank"
+                        href="https://policies.google.com/terms"
                         >Termos de serviço do Google</a
                       >
                       se aplicam.
                     </p>
-
                   </v-container>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="accent" @click.stop="clear">
+                  <v-btn color="accent" @click.stop="clear" tabindex="15">
                     <v-icon>mdi-close</v-icon>
                     Limpar
                   </v-btn>
-                  <v-btn color="primary" type="submit">
+                  <v-btn color="primary" type="submit" tabindex="14">
                     <v-icon>mdi-upload</v-icon>
                     Enviar
                   </v-btn>
@@ -343,6 +365,11 @@ export default {
       }
       return null;
     },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.solo.focus();
+    });
   },
   methods: {
     async dropFile(e, key) {
